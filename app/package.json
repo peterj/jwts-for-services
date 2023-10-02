@@ -1,0 +1,25 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js",
+    "servicea": "nodemon -r dotenv/config index.js dotenv_config_path=.servicea.env",
+    "serviceb": "nodemon -r dotenv/config index.js dotenv_config_path=.serviceb.env",
+    "servicec": "nodemon -r dotenv/config index.js dotenv_config_path=.servicec.env"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-winston": "^4.2.0",
+    "winston": "^3.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
