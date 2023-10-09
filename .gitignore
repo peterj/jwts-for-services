@@ -1,3 +1,6 @@
 /app/node_modules
 /jwt-factory/node_moduels
 /jwt-factory/keys
+/app/scenario-3-keys
+/app/cert.pem
+/app/key.pem

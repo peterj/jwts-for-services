@@ -5,7 +5,7 @@ const { logger } = require("./logger");
 const KEYS_FOLDER = "./keys";
 let signingKeyPair = {};
 
-function createKeyPair(keyId) {
+function createKeyPair() {
   logger.info("Generating new key pair");
   const { publicKey, privateKey } = generateKeyPairSync("rsa", {
     modulusLength: 2048,

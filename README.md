@@ -21,10 +21,15 @@ All environment variables for individual services are stored in the `.env` files
 
 | Endpoint | Description |
 | --- | --- |
-| `GET /scenario1{?expired=1}` | Runs the scenario one (see below). Use `expired=1` to have jwt-factory issue an expired token to service A |
-| `GET /scenario2{?expired=1}` | Runs the scenario two (see below). Provide `expired=1` to have jwt-factory issue an expired token to service B |
+| `GET /scenario1{?expired=1}` | Runs the scenario one (see below). Use `expired=1` to have jwt-factory issue an expired token |
+| `GET /scenario2{?expired=1}` | Runs the scenario two (see below). Provide `expired=1` to have jwt-factory issue an expired token |
+| `GET /scenario3{?expired=1}` | Runs the scenario three (see below). Provide `expired=1` to have Service A issue an expired token |
+| `GET /scenario4{?expired=1}` | Runs the scenario four (see below). Provide `expired=1` to have Service A issue an expired token |
 | `GET /scenario1-server` | Runs as the response to `/scenario1` call on Service B. Note that this shouldn't be invoked directly |
-| `GET /scenario2-server` | Runs as the response to `/scenario2` call on Service B and Service B. Note that this shouldn't be invoked directly |
+| `GET /scenario2-server` | Runs as the response to `/scenario2` call on Service B. Note that this shouldn't be invoked directly |
+| `GET /scenario3-server` | Runs as the response to `/scenario3` call on Service B. Note that this shouldn't be invoked directly |
+| `GET /scenario4-server}` | Runs as the rersponse to `/scenario3` call on Service B and Service C. Note that this shouldn't be invoked directly |
+
 
 # Build
 
@@ -32,7 +37,7 @@ To build the sample apps, go into `/app` and `/jwt-factory` folders and run `npm
 
 # Prerequisites
 
-The keys are created and managed centrally by the `jwt-factory` (i.e. the individual services don't have access to the keys). Another scenario would be where each service manages its own keys and can sign and verify tokens, without calling to the `jwt-factory`.
+In the first two scenarios, Tte keys are created and managed centrally by the `jwt-factory` (i.e. the individual services don't have access to the keys). Another scenario would be where each service manages its own keys and can sign and verify tokens, without calling to the `jwt-factory` (Scenario 3).
 
 1. Run the `jwt-factory` service:
 
@@ -51,6 +56,8 @@ curl localhost:5555/keys/serviceb
 # Store the key pairs in the /keys folder (so next time you don't have to generate the keys)
 curl -X POST localhost:5555/dump 
 ```
+
+For Scenario 3, make sure you install [mkcert](https://github.com/FiloSottile/mkcert), so you can create the public/private key.
 
 # Scenario 1
 
@@ -115,8 +122,8 @@ curl localhost:3000/scenario2
 
 Here's what happened:
 
-1. Service A made a call to the `jwt-factory` to request a token to access Service B (token with sub: servicea and aud: serviceb)
-2. Service A made a call to the `jwt-factory` to request a token to access Service C (token with sub: servicea and aud: servicec)
+1. Service A made a call to the `jwt-factory` to request a token to access Service B (token with `sub: servicea` and `aud: serviceb`)
+2. Service A made a call to the `jwt-factory` to request a token to access Service C (token with `sub: servicea` and `aud: servicec`)
 3. Service A used the token in the Authorization header to call Service B
 4. Service A used the token in the Authorization header to call Service C
 5. Service A returned the results from Service B and Service C
@@ -128,3 +135,71 @@ The output includes the responses from both services:
 ```
 
 You can add the `?expired=1` to the request to simulate the expiration of one of the tokens.
+# Scenario 3
+
+In this scenario, Service A has it's own public/private key and uses it to sign the JWTs. Ideally, the JWT expiration should be measured in seconds and have the `aud` and `sub` claims set accordingly. Service B then uses service A's public key to verify the JWT.
+
+At a minimum we also have to use a one-way TLS to protect the JWT.
+
+The key rotation would include rotating the keys as Service A, but also updating the Service B with the public key (so it can verify tokens from A are signed with the correct key).
+
+1. Run both services from two separate terminals:
+
+```shell
+# Terminal 1
+npm run servicea
+
+# Terminal 2
+npm run serviceb
+```
+
+2. Create the public/private key for TLS (run from the `/app` folder):
+
+```shell
+mkcert -key-file key.pem -cert-file cert.pem localhost
+```
+
+3. Create the public/private key for signing JWT tokens (run from the `/app` folder):
+
+```shell
+curl -X POST localhost:3000/gen-keys
+```
+
+>The above request will create a public and private key in the `/scenario-3-keys` folder. This is where both instances of the app will read the keys from (service A will read the private key to sign the JWTs, and service B will read the public key to verify the signature).
+
+
+To run the scenario, you can send the request to `localhost:3000/scenario3`. Here's what happens:
+
+From Service A (client):
+
+1. Service A will load the private key from the `scenario-3-keys` folder.
+2. Service A creates and signs a JWT token (`sub: servicea`, `aud: serviceb`) with the private key.
+3. Service A sends a GET request with the JWT token in the headers to the `https://` endpoint (e.g. `https://localhost:8443/scenario3-server`).
+
+From Service B (server):
+
+1. Service B reads the token from the Authorization header.
+2. Service B reads the public key from the `scenario-3-keys` folder.
+3. Service B uses the JWT library to verify the JWT token was signed with the correct key, and that it includes the correct `sub` and `aud` claims.
+4. Service B responds with the JWT verification result.
+
+The output from the call will look like this:
+
+```console
+curl localhost:3000/scenario3
+{"valid":true,"claims":{"iss":"https://service-issuer","sub":"servicea","aud":"serviceb","exp":1696879104,"iat":1696875504}}
+```
+
+You can also check the logs from both services to see what was happening.
+
+To test the scenario with an expired token, send the request like this: `curl localhost:3000/scenario3?expired=1` - this will issue an expired token, which will fail the request:
+
+```console
+"valid":false,"error":{"name":"TokenExpiredError","message":"jwt expired","expiredAt":"2023-10-09T17:38:41.000Z"},"claims":{}}
+```
+
+# Scenario 4
+
+This scenario is similar to the previous one, but in this case Service A is signing the JWTs for two services - service B and service C. The flow is exactly the same, each receiving service has access to the Service A's public key to verify the issued JWTs.
+
+>For the sake of simplicity Service B and Service C are using the same TLS certificates (using the `localhost`), in reality you'd have separate TLS certs for each of the services.
