@@ -1,0 +1,62 @@
+<header class="bg-sky-900">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Top">
+        <div class="w-full py-6 flex items-center justify-between border-b border-sky-500 lg:border-none">
+            <div class="flex items-center">
+                    <span class="sr-only">Web UI</span>
+      
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-10 w-auto text-white">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                      </svg>
+                      
+                <div class="hidden ml-10 space-x-8 lg:block">
+                    <a href="/" class="text-base font-semibold text-sky-100 hover:text-sky-300">
+                        Home
+                    </a>
+
+                    <% if (locals.user) { %>
+                    <a href="/profile" class="text-base font-semibold text-sky-100 hover:text-sky-300">
+                        Profile
+                    </a>
+
+                    <a href="/dashboard" class="text-base font-semibold text-sky-100 hover:text-sky-300">
+                        Dashboard
+                    </a>
+
+                    <a href="/logout" class="text-base font-semibold text-sky-100 hover:text-sky-300">
+                        Logout
+                    </a>
+
+                    <% } else { %>
+
+                    <a href="/login" class="text-base font-semibold text-sky-100 hover:text-sky-300">
+                        Login
+                    </a>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+        <div class="py-4 flex flex-wrap justify-center space-x-6 lg:hidden">
+            <a href="/" class="text-base font-semibold text-sky-100 hover:text-sky-300">
+                Home
+            </a>
+
+            <% if (locals.user) { %>
+            <a href="/profile" class="text-base font-semibold text-sky-100 hover:text-sky-300">
+                Profile
+            </a>
+
+            <a href="/dashboard" class="text-base font-semibold text-sky-100 hover:text-sky-300">
+                Dashboard
+            </a>
+
+            <a href="/logout" class="text-base font-semibold text-sky-100 hover:text-sky-300">
+                Logout
+            </a>
+            <% } else { %>
+            <a href="/login" class="text-base font-semibold text-sky-100 hover:text-sky-300">
+                Login
+            </a>
+            <% } %>
+        </div>
+    </nav>
+</header>

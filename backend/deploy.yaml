@@ -1,0 +1,86 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: backend-api
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-api
+  labels:
+    app: backend-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-api
+  template:
+    metadata:
+      labels:
+        app: backend-api
+    spec:
+      serviceAccountName: backend-api
+      containers:
+        - image: pj3677/backend-api
+          imagePullPolicy: Always
+          name: svc
+          ports:
+            - containerPort: 3000
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: backend-api
+  labels:
+    app: backend-api
+spec:
+  selector:
+    app: backend-api
+  ports:
+    - port: 80
+      name: http
+      targetPort: 3000
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: second-backend-api
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: second-backend-api
+  labels:
+    app: second-backend-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: second-backend-api
+  template:
+    metadata:
+      labels:
+        app: second-backend-api
+    spec:
+      serviceAccountName: second-backend-api
+      containers:
+        - image: pj3677/backend-api
+          imagePullPolicy: Always
+          name: svc
+          ports:
+            - containerPort: 3000
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: second-backend-api
+  labels:
+    app: second-backend-api
+spec:
+  selector:
+    app: second-backend-api
+  ports:
+    - port: 80
+      name: http
+      targetPort: 3000
+---

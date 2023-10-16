@@ -1,0 +1,13 @@
+<div class="m-12">
+    <h1 class=" text-3xl text-zinc-800">Welcome to your profile: <span class="font-bold"><%=user.name%></span><h1>
+
+        <% if (user.picture) { %>
+            <img class="block py-3" src="<%= user.picture %>" width="128">
+        <% } %>
+
+        <div class="mt-5">
+            <h3 class="font-semibold text-sm">Profile information</h3>
+            <div class="mt-1 block bg-zinc-100 p-4 text-sm overflow-scroll"><%= userProfile %></div>
+        </div>
+
+</div>

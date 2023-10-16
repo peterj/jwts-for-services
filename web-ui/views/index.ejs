@@ -1,0 +1,34 @@
+<div class="m-12">
+    <h1 class=" text-5xl text-zinc-800">Hello and welcome to Web UI<h1>
+    <div class="pt-8 text-lg text-zinc-600">
+        <% if (locals.user) { %>
+            <p>You are logged in. <a href="/profile" class="underline text-pink-500">Check your profile</a>.</p>
+        <% } else { %>
+            <p>You are not logged in. Click <a href="/login" class="underline text-pink-500">here</a> to login.</p>
+        <% } %>
+    </div>
+    <% if (error) { %>
+        <div class="mt-5">
+            <h3 class="font-semibold text-sm">Error:</h3>
+            <div class="mt-1 block bg-red-200 p-4 text-sm overflow-scroll"><%= error %></div>
+        </div>
+    <% } else { %>
+        <div class="mt-5">
+            <h3 class="font-semibold text-sm">Data from: <%= firstServiceUrl %></h3>
+            <% if (dataFromFirstService.error) { %>
+                <div class="mt-1 block bg-red-200 p-4 text-sm overflow-scroll"><%= dataFromFirstService %></div>
+            <% } else { %>
+                <div class="mt-1 block bg-zinc-100 p-4 text-sm overflow-scroll"><%= dataFromFirstService %></div>
+            <% } %>
+        </div>
+
+        <div class="mt-5">
+            <h3 class="font-semibold text-sm">Data from: <%= secondServiceUrl %></h3>
+            <% if (dataFromSecondService.error) { %>
+                <div class="mt-1 block bg-red-200 p-4 text-sm overflow-scroll"><%= dataFromSecondService %></div>
+            <% } else { %>
+                <div class="mt-1 block bg-zinc-100 p-4 text-sm overflow-scroll"><%= dataFromSecondService %></div>
+            <% } %>
+        </div>
+    <%} %>
+</div>

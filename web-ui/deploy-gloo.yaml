@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: webui
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webui
+  labels:
+    app: webui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webui
+  template:
+    metadata:
+      labels:
+        app: webui
+        version: v1
+    spec:
+      serviceAccountName: webui
+      containers:
+        - image: pj3677/webui
+          imagePullPolicy: Always
+          name: web
+          ports:
+            - containerPort: 3000
+          env:
+            - name: BACKEND_SERVICE_URL
+              value: 'http://backend-api'
+            - name: SECOND_BACKEND_SERVICE_URL
+              value: 'http://second-backend-api'
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: webui
+  labels:
+    app: webui
+spec:
+  selector:
+    app: webui
+  ports:
+    - port: 80
+      name: http
+      targetPort: 8080

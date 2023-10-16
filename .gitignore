@@ -4,3 +4,10 @@
 /app/scenario-3-keys
 /app/cert.pem
 /app/key.pem
+
+**/*.crt
+**/*.csr
+**/*.key
+**/*.conf
+
+**/*.env
