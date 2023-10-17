@@ -198,7 +198,7 @@ You can also check the logs from both services to see what was happening.
 To test the scenario with an expired token, send the request like this: `curl localhost:3000/scenario3?expired=1` - this will issue an expired token, which will fail the request:
 
 ```console
-"valid":false,"error":{"name":"TokenExpiredError","message":"jwt expired","expiredAt":"2023-10-09T17:38:41.000Z"},"claims":{}}
+{}"valid":false,"error":{"name":"TokenExpiredError","message":"jwt expired","expiredAt":"2023-10-09T17:38:41.000Z"},"claims":{}}
 ```
 
 ## Scenario 4
@@ -315,7 +315,7 @@ So far, we've only configured authorization policy that allows or denies access 
 
 Since we've implemented user authentication, let's see how we can add an authorization policy that allows access only to logged-in users.
 
-Let's start by creating an RequestAuthentication policy that requires a JWT token to be present in the request from the `frontend` to the `backend`:
+Let's start by creating an RequestAuthentication policy that requires a JWT token to be present in the request from the `web-ui` to the `backend`:
 
 ```yaml
 apiVersion: security.istio.io/v1beta1
